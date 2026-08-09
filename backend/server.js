@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 } else {
   app.get('/', (req, res) => {
-    res.send('ShopNest API is running in Development mode...');
+    res.send('Mallzy API is running in Development mode...');
   });
 }
 
