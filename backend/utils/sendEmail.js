@@ -1,23 +1,21 @@
-const SibApiV3Sdk = require('@getbrevo/brevo');
+const brevo = require('@getbrevo/brevo');
 
-   const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-   apiInstance.setApiKey(
-     SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
-     process.env.BREVO_API_KEY
-   );
+const apiInstance = new brevo.TransactionalEmailsApi();
+apiInstance.authentications['apiKey'].apiKey = process.env.BREVO_API_KEY;
 
-   const sendEmail = async ({ email, subject, message }) => {
-     try {
-       await apiInstance.sendTransacEmail({
-         sender: { name: 'Mallzy', email: 'hisoumyadeepbiswas@gmail.com' },
-         to: [{ email }],
-         subject,
-         htmlContent: message,
-       });
-       console.log(`Email successfully sent to ${email}`);
-     } catch (error) {
-       console.error(`Failed to send email to ${email}: ${error.message}`);
-     }
-   };
+const sendEmail = async ({ email, subject, message }) => {
+  try {
+    const sendSmtpEmail = new brevo.SendSmtpEmail();
+    sendSmtpEmail.sender = { name: 'Mallzy', email: 'hisoumyadeepbiswas@gmail.com' };
+    sendSmtpEmail.to = [{ email }];
+    sendSmtpEmail.subject = subject;
+    sendSmtpEmail.htmlContent = message;
 
-   module.exports = sendEmail;
+    await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log(`Email successfully sent to ${email}`);
+  } catch (error) {
+    console.error(`Failed to send email to ${email}: ${error.message}`);
+  }
+};
+
+module.exports = sendEmail;
