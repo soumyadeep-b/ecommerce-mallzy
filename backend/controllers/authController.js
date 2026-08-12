@@ -14,7 +14,41 @@ const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
 
     const userExists = await User.findOne({ email });
-    if (userExists) return res.status(400).json({ message: 'User already exists' });
+if (userExists) {
+  if (userExists.isVerified) {
+    return res.status(400).json({ message: 'User already exists' });
+  }
+
+  // Unverified user trying again — resend a fresh OTP instead of blocking
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  const otp = generateOtp();
+
+  userExists.name = name;
+  userExists.password = hashedPassword;
+  userExists.otp = otp;
+  userExists.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+  await userExists.save();
+
+  const message = `
+    <h2>Welcome back, ${name}!</h2>
+    <p>Please verify your email using the OTP below. It expires in 10 minutes.</p>
+    <h1 style="letter-spacing: 4px;">${otp}</h1>
+    <br>
+    <p>Thank You. Team Mallzy.</p>
+  `;
+
+  await sendEmail({
+    email: userExists.email,
+    subject: 'Mallzy - Verify Your Email.',
+    message
+  });
+
+  return res.status(200).json({
+    message: 'OTP resent. Please check your email.',
+    email: userExists.email
+  });
+}
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
