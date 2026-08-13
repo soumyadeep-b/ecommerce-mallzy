@@ -27,6 +27,16 @@ A full-stack MERN e-commerce platform with product listings, cart, checkout, ord
 - JWT-based user authentication and authorization
 - Email notifications via Nodemailer
 
+## 💳 Testing Payments (Razorpay Sandbox)
+
+This project uses Razorpay in **test mode** — no real money is charged. Use the following details at checkout:
+
+**Test Card**
+- Card Number: `4100 2800 0000 1007`
+- Expiry: Any future date (e.g. `12/28`)
+- CVV: Any 3 digits (e.g. `123`)
+- Name: Any name 
+
 ## 📸 Screenshots
 
 ![Home Screen](frontend/public/ss.png)
